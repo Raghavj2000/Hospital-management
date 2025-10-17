@@ -1,0 +1,2 @@
+Appointment ID,Patient ID,Patient Name,Doctor Name,Department,Appointment Date,Appointment Time,Status,Diagnosis,Treatment/Prescription,Notes,Next Visit Date
+1,1,John Doe,Dr. Sarah Johnson,Cardiology,2025-10-13,09:00:00,Booked,N/A,N/A,N/A,N/A
