@@ -2,7 +2,6 @@ from datetime import datetime
 from app import db
 
 class Department(db.Model):
-    """Department/Specialization model"""
     __tablename__ = 'departments'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -11,7 +10,7 @@ class Department(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    # Relationships
+    #Doctor table relationship
     doctors = db.relationship('Doctor', backref='department', lazy='dynamic')
 
     @property

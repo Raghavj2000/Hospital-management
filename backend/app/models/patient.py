@@ -2,7 +2,6 @@ from datetime import datetime
 from app import db
 
 class Patient(db.Model):
-    """Patient profile model"""
     __tablename__ = 'patients'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -10,8 +9,8 @@ class Patient(db.Model):
     full_name = db.Column(db.String(150), nullable=False, index=True)
     phone = db.Column(db.String(20), nullable=True)
     date_of_birth = db.Column(db.Date, nullable=True)
-    gender = db.Column(db.String(10), nullable=True)  # 'Male', 'Female', 'Other'
-    blood_group = db.Column(db.String(5), nullable=True)  # 'A+', 'B+', 'O+', 'AB+', etc.
+    gender = db.Column(db.String(10), nullable=True) 
+    blood_group = db.Column(db.String(5), nullable=True)
     address = db.Column(db.Text, nullable=True)
     emergency_contact = db.Column(db.String(20), nullable=True)
     medical_history = db.Column(db.Text, nullable=True)

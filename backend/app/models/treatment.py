@@ -2,7 +2,6 @@ from datetime import datetime
 from app import db
 
 class Treatment(db.Model):
-    """Treatment/Medical Record model"""
     __tablename__ = 'treatments'
 
     id = db.Column(db.Integer, primary_key=True)

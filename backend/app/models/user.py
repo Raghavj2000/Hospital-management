@@ -2,7 +2,7 @@ from datetime import datetime
 from app import db, bcrypt
 
 class User(db.Model):
-    """Base User model for all user types"""
+    """Base User model"""
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)

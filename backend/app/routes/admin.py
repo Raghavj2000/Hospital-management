@@ -42,14 +42,14 @@ def dashboard():
         return jsonify({'error': f'Failed to fetch dashboard data: {str(e)}'}), 500
 
 
-# ============= Department Management =============
+#Department Management Routes
 
+"""Get all departments"""
 @bp.route('/departments', methods=['GET'])
 @jwt_required()
 @role_required('admin')
 @cache_response('admin_departments', timeout=600)
 def get_departments():
-    """Get all departments"""
     try:
         departments = Department.query.all()
         return jsonify({
@@ -59,11 +59,11 @@ def get_departments():
         return jsonify({'error': f'Failed to fetch departments: {str(e)}'}), 500
 
 
+"""Create a new department"""
 @bp.route('/departments', methods=['POST'])
 @jwt_required()
 @role_required('admin')
 def create_department():
-    """Create a new department"""
     data = request.get_json()
 
     required_fields = ['name']
@@ -71,7 +71,6 @@ def create_department():
     if missing_fields:
         return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
 
-    # Check if department already exists
     if Department.query.filter_by(name=data['name']).first():
         return jsonify({'error': 'Department already exists'}), 409
 
@@ -95,11 +94,12 @@ def create_department():
         return jsonify({'error': f'Failed to create department: {str(e)}'}), 500
 
 
+"""Update a department"""
 @bp.route('/departments/<int:dept_id>', methods=['PUT'])
 @jwt_required()
 @role_required('admin')
 def update_department(dept_id):
-    """Update a department"""
+    
     department = Department.query.get(dept_id)
     if not department:
         return jsonify({'error': 'Department not found'}), 404
@@ -130,11 +130,12 @@ def update_department(dept_id):
         return jsonify({'error': f'Failed to update department: {str(e)}'}), 500
 
 
+"""Delete a department"""
 @bp.route('/departments/<int:dept_id>', methods=['DELETE'])
 @jwt_required()
 @role_required('admin')
 def delete_department(dept_id):
-    """Delete a department"""
+   
     department = Department.query.get(dept_id)
     if not department:
         return jsonify({'error': 'Department not found'}), 404
@@ -155,7 +156,7 @@ def delete_department(dept_id):
         return jsonify({'error': f'Failed to delete department: {str(e)}'}), 500
 
 
-# ============= Doctor Management =============
+#Doctor Management Routes
 
 @bp.route('/doctors', methods=['GET'])
 @jwt_required()
@@ -185,11 +186,12 @@ def get_doctors():
         return jsonify({'error': f'Failed to fetch doctors: {str(e)}'}), 500
 
 
+"""Get a specific doctor"""
 @bp.route('/doctors/<int:doctor_id>', methods=['GET'])
 @jwt_required()
 @role_required('admin')
 def get_doctor(doctor_id):
-    """Get a specific doctor"""
+    
     doctor = Doctor.query.get(doctor_id)
     if not doctor:
         return jsonify({'error': 'Doctor not found'}), 404
@@ -197,11 +199,12 @@ def get_doctor(doctor_id):
     return jsonify({'doctor': doctor.to_dict(include_user=True)}), 200
 
 
+"""Create a new doctor account"""
 @bp.route('/doctors', methods=['POST'])
 @jwt_required()
 @role_required('admin')
 def create_doctor():
-    """Create a new doctor account"""
+    
     data = request.get_json()
 
     required_fields = ['username', 'email', 'password', 'full_name', 'department_id']
@@ -264,11 +267,12 @@ def create_doctor():
         return jsonify({'error': f'Failed to create doctor: {str(e)}'}), 500
 
 
+"""Update doctor profile"""
 @bp.route('/doctors/<int:doctor_id>', methods=['PUT'])
 @jwt_required()
 @role_required('admin')
 def update_doctor(doctor_id):
-    """Update doctor profile"""
+    
     doctor = Doctor.query.get(doctor_id)
     if not doctor:
         return jsonify({'error': 'Doctor not found'}), 404

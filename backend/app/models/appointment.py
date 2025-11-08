@@ -2,7 +2,6 @@ from datetime import datetime
 from app import db
 
 class Appointment(db.Model):
-    """Appointment model"""
     __tablename__ = 'appointments'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -16,10 +15,10 @@ class Appointment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    # Relationships
+    #Treatment table relationship
     treatment = db.relationship('Treatment', backref='appointment', uselist=False, cascade='all, delete-orphan')
 
-    # Unique constraint to prevent double booking
+    #Unique constraint to prevent double booking
     __table_args__ = (db.UniqueConstraint('doctor_id', 'appointment_date', 'appointment_time', name='_doctor_datetime_uc'),)
 
     def to_dict(self, include_details=False):
