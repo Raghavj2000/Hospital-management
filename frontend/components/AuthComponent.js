@@ -11,7 +11,6 @@ const AuthComponent = {
                     <div class="col-lg-10">
                         <div class="auth-card">
                             <div class="auth-header">
-                                <i class="bi bi-hospital-fill" style="font-size: 3rem;"></i>
                                 <h2>Hospital Management System</h2>
                                 <p class="mb-0">{{ isLogin ? 'Login to your account' : 'Create a new account' }}</p>
                             </div>
@@ -108,37 +107,6 @@ const AuthComponent = {
                                                 <a href="#" @click.prevent="isLogin = true" class="text-primary">Login</a>
                                             </p>
                                         </form>
-                                    </div>
-
-                                    <!-- Divider -->
-                                    <div class="col-12 mt-4">
-                                        <hr>
-                                        <div class="text-center">
-                                            <button
-                                                class="btn btn-outline-primary me-2"
-                                                @click="toggleForm">
-                                                {{ isLogin ? 'Switch to Register' : 'Switch to Login' }}
-                                            </button>
-                                        </div>
-
-                                        <!-- Quick Login Credentials -->
-                                        <div class="mt-4 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
-                                            <h6 class="text-center mb-3">Quick Test Credentials</h6>
-                                            <div class="row text-center small">
-                                                <div class="col-md-4">
-                                                    <strong>Admin</strong><br>
-                                                    admin / admin123
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <strong>Doctor</strong><br>
-                                                    dr_heart / doctor123
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <strong>Patient</strong><br>
-                                                    patient1 / patient123
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

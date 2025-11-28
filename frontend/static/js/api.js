@@ -51,9 +51,6 @@ const API = {
 
         getCurrentUser: () =>
             apiClient.get('/auth/me'),
-
-        refreshToken: () =>
-            apiClient.post('/auth/refresh')
     },
 
     // ============ Admin APIs ============
@@ -107,12 +104,6 @@ const API = {
         getAppointments: (params) =>
             apiClient.get('/admin/appointments', { params }),
 
-        // Search
-        searchDoctors: (query) =>
-            apiClient.get('/admin/search/doctors', { params: { q: query } }),
-
-        searchPatients: (query) =>
-            apiClient.get('/admin/search/patients', { params: { q: query } })
     },
 
     // ============ Doctor APIs ============
@@ -178,9 +169,6 @@ const API = {
 
         getDoctor: (id) =>
             apiClient.get(`/patient/doctors/${id}`),
-
-        searchDoctors: (query) =>
-            apiClient.get('/patient/search/doctors', { params: { q: query } }),
 
         // Appointments
         getAppointments: (params) =>

@@ -6,46 +6,28 @@
 const DoctorDashboard = {
     template: `
         <div class="dashboard-container">
-            <!-- Welcome Header -->
-            <div class="dashboard-header">
-                <h1>Welcome Dr. {{ profile?.full_name || 'Doctor' }}</h1>
-                <p class="welcome-text">Manage your appointments and patients</p>
-            </div>
-
             <!-- Statistics Cards -->
             <div class="row mb-4">
                 <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="stat-card primary">
-                        <div class="stat-card-icon text-primary">
-                            <i class="bi bi-calendar-today"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Today's Appointments</div>
                         <div class="stat-card-value">{{ stats.today_appointments }}</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="stat-card info">
-                        <div class="stat-card-icon text-info">
-                            <i class="bi bi-calendar-week"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">This Week</div>
                         <div class="stat-card-value">{{ stats.week_appointments }}</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="stat-card success">
-                        <div class="stat-card-icon text-success">
-                            <i class="bi bi-people"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Total Patients</div>
                         <div class="stat-card-value">{{ stats.total_patients }}</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="stat-card warning">
-                        <div class="stat-card-icon text-warning">
-                            <i class="bi bi-check-circle"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Completed</div>
                         <div class="stat-card-value">{{ stats.completed_appointments }}</div>
                     </div>
@@ -119,8 +101,8 @@ const DoctorDashboard = {
                                     <div class="card-body">
                                         <h5 class="card-title">{{ patient.full_name }}</h5>
                                         <p class="card-text">
-                                            <i class="bi bi-telephone"></i> {{ patient.phone || 'N/A' }}<br>
-                                            <i class="bi bi-droplet"></i> Blood: {{ patient.blood_group || 'N/A' }}
+                                             {{ patient.phone || 'N/A' }}<br>
+                                            Blood: {{ patient.blood_group || 'N/A' }}
                                         </p>
                                         <button class="btn btn-sm btn-primary"
                                                 @click="viewPatientHistory(patient)">
@@ -149,7 +131,7 @@ const DoctorDashboard = {
                                     {{ formatDate(slot.date) }}
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="time-slot available">
+                                    <span>
                                         {{ slot.start_time }} - {{ slot.end_time }}
                                     </span>
                                     <button class="btn btn-sm btn-outline-danger"

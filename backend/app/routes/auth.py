@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app import db
 from app.models.user import User
 from app.models.patient import Patient
@@ -74,7 +74,7 @@ def login():
     if user.is_blacklisted:
         return jsonify({'error': 'Account is blacklisted'}), 403
 
-    # Create access and refresh tokens
+    # Create access tokens
     access_token = create_access_token(identity=str(user.id))
 
     # Get profile data based on role

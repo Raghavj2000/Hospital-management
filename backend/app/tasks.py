@@ -144,7 +144,7 @@ def send_monthly_reports():
     try:
         # Get last month's date range
         today = datetime.now()
-        first_day_current_month = today.replace(day=30)
+        first_day_current_month = today.replace(day=1)
         last_day_prev_month = first_day_current_month - timedelta(days=1)
         first_day_prev_month = last_day_prev_month.replace(day=1)
 

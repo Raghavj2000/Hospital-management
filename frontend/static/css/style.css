@@ -47,7 +47,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #f5f5f5;
 }
 
 .auth-card {
@@ -60,7 +60,7 @@ body {
 }
 
 .auth-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: black;
     color: white;
     padding: 30px;
     text-align: center;
@@ -127,13 +127,7 @@ body {
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
     height: 100%;
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
 .stat-card-icon {
@@ -141,18 +135,11 @@ body {
     margin-bottom: 10px;
 }
 
-.stat-card-title {
-    font-size: 0.9rem;
-    color: #6c757d;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
 
 .stat-card-value {
     font-size: 2rem;
     font-weight: bold;
-    color: var(--dark-color);
+    color: black;
 }
 
 .stat-card.primary { border-left: 4px solid var(--primary-color); }
@@ -286,7 +273,6 @@ body {
     align-items: center;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 2px solid var(--light-color);
 }
 
 .section-card-header h4 {
@@ -303,14 +289,7 @@ body {
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
-    cursor: pointer;
     height: 100%;
-    border-left: 4px solid var(--primary-color);
-}
-
-.department-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
 }
 
 .department-card h5 {
@@ -325,11 +304,6 @@ body {
     margin-bottom: 15px;
 }
 
-.department-card .doctor-count {
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
 /* ============ Doctor Cards ============ */
 .doctor-card {
     background: white;
@@ -338,10 +312,6 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
     height: 100%;
-}
-
-.doctor-card:hover {
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
 }
 
 .doctor-avatar {
@@ -464,7 +434,7 @@ body {
 }
 
 .modal-header {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--info-color) 100%);
+    background:var(--primary-color);
     color: white;
     border-radius: 15px 15px 0 0;
     padding: 20px 25px;

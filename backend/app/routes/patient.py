@@ -12,6 +12,7 @@ from app.models.treatment import Treatment
 from app.utils.decorators import role_required
 from app.utils.validators import parse_date, parse_time
 from app.utils.cache import cache_response, invalidate_cache
+from config.config import config
 
 bp = Blueprint('patient', __name__, url_prefix='/api/patient')
 
@@ -152,36 +153,6 @@ def get_doctor(doctor_id):
 
     except Exception as e:
         return jsonify({'error': f'Failed to fetch doctor details: {str(e)}'}), 500
-
-
-@bp.route('/search/doctors', methods=['GET'])
-@jwt_required()
-@role_required('patient')
-def search_doctors():
-    """Search doctors by name or specialization"""
-    query_str = request.args.get('q', '').strip()
-
-    if not query_str:
-        return jsonify({'error': 'Search query is required'}), 400
-
-    try:
-        # Search in doctor name and department name
-        doctors = Doctor.query.join(Department).filter(
-            and_(
-                Doctor.is_available == True,
-                or_(
-                    Doctor.full_name.ilike(f'%{query_str}%'),
-                    Department.name.ilike(f'%{query_str}%')
-                )
-            )
-        ).all()
-
-        return jsonify({
-            'doctors': [doctor.to_dict() for doctor in doctors]
-        }), 200
-
-    except Exception as e:
-        return jsonify({'error': f'Search failed: {str(e)}'}), 500
 
 
 # ============= Appointment Management =============

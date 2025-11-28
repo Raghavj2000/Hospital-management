@@ -6,31 +6,17 @@
 const PatientDashboard = {
     template: `
         <div class="dashboard-container">
-            <!-- Welcome Header -->
-            <div class="dashboard-header">
-                <h1>Welcome {{ profile?.full_name || 'Patient' }}</h1>
-                <p class="welcome-text">
-                    <i class="bi bi-person"></i> {{ currentUser.username }} |
-                    <i class="bi bi-envelope"></i> {{ currentUser.email }}
-                </p>
-            </div>
 
             <!-- Statistics Cards -->
             <div class="row mb-4">
                 <div class="col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card primary">
-                        <div class="stat-card-icon text-primary">
-                            <i class="bi bi-calendar-check"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Upcoming Appointments</div>
                         <div class="stat-card-value">{{ upcomingCount }}</div>
                     </div>
                 </div>
                 <div class="col-md-6 col-sm-6 mb-3">
-                    <div class="stat-card success">
-                        <div class="stat-card-icon text-success">
-                            <i class="bi bi-clipboard2-pulse"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Total Appointments</div>
                         <div class="stat-card-value">{{ totalAppointments }}</div>
                     </div>
@@ -59,7 +45,7 @@ const PatientDashboard = {
                                     <p>{{ dept.description }}</p>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <span class="doctor-count">
-                                            <i class="bi bi-people"></i> {{ dept.doctors_count }} Doctors
+                                            {{ dept.doctors_count }} Doctors
                                         </span>
                                         <button class="btn btn-sm btn-primary"
                                                 @click.stop="viewDepartmentDoctors(dept)">
@@ -144,12 +130,6 @@ const PatientDashboard = {
                             </button>
                         </div>
 
-                        <div class="text-center mb-3">
-                            <div class="doctor-avatar mx-auto">
-                                {{ getUserInitials() }}
-                            </div>
-                        </div>
-
                         <div class="profile-info">
                             <p><strong>Name:</strong> {{ profile?.full_name || 'N/A' }}</p>
                             <p><strong>Phone:</strong> {{ profile?.phone || 'N/A' }}</p>
@@ -160,16 +140,17 @@ const PatientDashboard = {
 
                     <!-- Quick Actions -->
                     <div class="section-card">
-                        <h5>Quick Actions</h5>
+                        <h5>Actions</h5>
                         <div class="d-grid gap-2">
                             <button class="btn btn-primary" @click="showBookModal = true">
-                                <i class="bi bi-calendar-plus"></i> Book Appointment
+                            Book Appointment
                             </button>
-                            <button class="btn btn-outline-primary" @click="viewTreatmentHistory">
-                                <i class="bi bi-file-medical"></i> View Medical History
+                            <button class="btn btn-primary" @click="viewTreatmentHistory">
+                             View Medical History
                             </button>
-                            <button class="btn btn-outline-secondary" @click="showEditProfileModal = true">
-                                <i class="bi bi-person-gear"></i> Update Profile
+                            <button class="btn btn-secondary" @click="exportTreatmentHistory" :disabled="exporting">
+                                <span v-if="exporting" class="spinner-border spinner-border-sm me-2"></span>
+                                Export Treatment History
                             </button>
                         </div>
                     </div>
@@ -189,19 +170,16 @@ const PatientDashboard = {
                             <div class="row">
                                 <div class="col-md-6 mb-3" v-for="doctor in departmentDoctors" :key="doctor.id">
                                     <div class="doctor-card">
-                                        <div class="doctor-avatar">
-                                            {{ doctor.full_name.substring(0, 2).toUpperCase() }}
-                                        </div>
                                         <div class="doctor-name">{{ doctor.full_name }}</div>
                                         <div class="doctor-specialty">{{ selectedDepartment.name }}</div>
                                         <div class="doctor-info">
-                                            <i class="bi bi-award"></i> {{ doctor.qualification || 'N/A' }}
+                                            {{ doctor.qualification || 'N/A' }}
                                         </div>
                                         <div class="doctor-info">
-                                            <i class="bi bi-briefcase"></i> {{ doctor.experience_years }} years exp.
+                                            {{ doctor.experience_years }} years exp.
                                         </div>
                                         <div class="doctor-info">
-                                            <i class="bi bi-currency-dollar"></i> Fee: {{ doctor.consultation_fee }}
+                                            Fee: {{ doctor.consultation_fee }}
 
 
                                         </div>
@@ -280,7 +258,7 @@ const PatientDashboard = {
 
                                 <button type="submit" class="btn btn-primary"
                                         :disabled="!bookingForm.doctor_id || !bookingForm.appointment_date">
-                                    <i class="bi bi-calendar-check"></i> Book Appointment
+                                     Book Appointment
                                 </button>
                             </form>
                         </div>
@@ -413,7 +391,8 @@ const PatientDashboard = {
                 blood_group: '',
                 address: ''
             },
-            bloodGroups: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+            bloodGroups: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+            exporting: false
         };
     },
 
@@ -600,11 +579,6 @@ const PatientDashboard = {
             }
         },
 
-        getUserInitials() {
-            if (!this.profile?.full_name) return '?';
-            return this.profile.full_name.substring(0, 2).toUpperCase();
-        },
-
         formatDate(dateStr) {
             return new Date(dateStr).toLocaleDateString();
         },
@@ -616,6 +590,19 @@ const PatientDashboard = {
                 'Cancelled': 'badge-cancelled'
             };
             return classes[status] || '';
+        },
+
+        async exportTreatmentHistory() {
+            try {
+                this.exporting = true;
+                const response = await API.patient.exportTreatments();
+                this.$root.showToast(response.data.message, 'success');
+            } catch (error) {
+                const message = error.response?.data?.error || 'Failed to export treatment history.';
+                this.$root.showToast(message, 'error');
+            } finally {
+                this.exporting = false;
+            }
         }
     },
 

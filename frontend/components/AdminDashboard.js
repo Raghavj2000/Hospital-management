@@ -6,46 +6,28 @@
 const AdminDashboard = {
     template: `
         <div class="dashboard-container">
-            <!-- Welcome Header -->
-            <div class="dashboard-header">
-                <h1>Welcome Admin</h1>
-                <p class="welcome-text">Manage hospital operations from your dashboard</p>
-            </div>
-
             <!-- Statistics Cards -->
             <div class="row mb-4">
                 <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="stat-card primary">
-                        <div class="stat-card-icon text-primary">
-                            <i class="bi bi-people-fill"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Total Doctors</div>
                         <div class="stat-card-value">{{ stats.total_doctors }}</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="stat-card success">
-                        <div class="stat-card-icon text-success">
-                            <i class="bi bi-person-check-fill"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Total Patients</div>
                         <div class="stat-card-value">{{ stats.total_patients }}</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="stat-card info">
-                        <div class="stat-card-icon text-info">
-                            <i class="bi bi-calendar-check-fill"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Total Appointments</div>
                         <div class="stat-card-value">{{ stats.total_appointments }}</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-sm-6 mb-3">
-                    <div class="stat-card warning">
-                        <div class="stat-card-icon text-warning">
-                            <i class="bi bi-building-fill"></i>
-                        </div>
+                    <div class="stat-card">
                         <div class="stat-card-title">Departments</div>
                         <div class="stat-card-value">{{ stats.total_departments }}</div>
                     </div>
@@ -57,25 +39,25 @@ const AdminDashboard = {
                 <li class="nav-item">
                     <button class="nav-link" :class="{active: activeTab === 'doctors'}"
                             @click="activeTab = 'doctors'">
-                        <i class="bi bi-person-badge"></i> Registered Doctors
+                     Registered Doctors
                     </button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" :class="{active: activeTab === 'patients'}"
                             @click="activeTab = 'patients'">
-                        <i class="bi bi-people"></i> Registered Patients
+                     Registered Patients
                     </button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" :class="{active: activeTab === 'appointments'}"
                             @click="activeTab = 'appointments'">
-                        <i class="bi bi-calendar3"></i> Appointments
+                     Appointments
                     </button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" :class="{active: activeTab === 'departments'}"
                             @click="activeTab = 'departments'">
-                        <i class="bi bi-building"></i> Departments
+                     Departments
                     </button>
                 </li>
             </ul>
@@ -258,14 +240,14 @@ const AdminDashboard = {
                                     <h5>{{ dept.name }}</h5>
                                     <p>{{ dept.description }}</p>
                                     <div class="doctor-count">
-                                        <i class="bi bi-people"></i> {{ dept.doctors_count }} Doctors
+                                     {{ dept.doctors_count }} Doctors
                                     </div>
                                     <div class="mt-3">
                                         <button class="btn btn-sm btn-outline-primary me-2"
                                                 @click="editDepartment(dept)">
                                             Edit
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger"
+                                        <button class="btn btn-sm btn-outline-primary"
                                                 @click="deleteDepartment(dept)">
                                             Delete
                                         </button>

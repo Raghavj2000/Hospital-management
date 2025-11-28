@@ -20,9 +20,6 @@ const NavbarComponent = {
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <div class="user-info">
-                                <div class="user-avatar-small">
-                                    {{ getUserInitials() }}
-                                </div>
                                 <div>
                                     <div class="fw-bold">{{ user.username }}</div>
                                     <small class="text-muted">{{ getRoleLabel() }}</small>
@@ -44,11 +41,6 @@ const NavbarComponent = {
     props: ['user'],
 
     methods: {
-        getUserInitials() {
-            if (!this.user || !this.user.username) return '?';
-            return this.user.username.substring(0, 2).toUpperCase();
-        },
-
         getRoleLabel() {
             const roles = {
                 'admin': 'Administrator',
