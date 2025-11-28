@@ -11,12 +11,11 @@ db = SQLAlchemy()
 jwt = JWTManager()
 bcrypt = Bcrypt()
 redis_client = None
-celery = None
 
-def create_app(config_name='default'):
+def create_app():
     """Application factory function"""
     app = Flask(__name__)
-    app.config.from_object(config[config_name])
+    app.config.from_object(config)
 
     # Initialize extensions
     db.init_app(app)
@@ -28,16 +27,9 @@ def create_app(config_name='default'):
     global redis_client
     try:
         redis_client = Redis.from_url(app.config['REDIS_URL'], decode_responses=True)
-        redis_client.ping()
-        print("Redis connected successfully")
     except Exception as e:
         print(f"Redis connection failed: {e}")
         redis_client = None
-
-    # Initialize Celery
-    global celery
-    from app.celery_app import make_celery
-    celery = make_celery(app)
 
     # Register blueprints
     from app.routes import auth, admin, doctor, patient

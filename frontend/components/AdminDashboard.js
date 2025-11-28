@@ -357,7 +357,7 @@ const AdminDashboard = {
 
             <!-- Add Department Modal -->
             <div class="modal" :class="{show: showAddDepartmentModal, 'd-block': showAddDepartmentModal}"
-                 v-if="showAddDepartmentModal" @click.self="showAddDepartmentModal = false">
+                 v-if="showAddDepartmentModal" @click.self="closeDepModal()">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">

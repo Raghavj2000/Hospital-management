@@ -18,28 +18,16 @@ import os
 # Email configuration - Use environment variables for production
 EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USER = os.getenv('EMAIL_USER', 'your-email@gmail.com')
-EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', 'your-app-password')
-EMAIL_FROM = os.getenv('EMAIL_FROM', 'Hospital Management System <noreply@hospital.com>')
+EMAIL_USER = os.getenv('SMTP_USERNAME', 'projectaaron11@gmail.com')
+EMAIL_PASSWORD = os.getenv('SMTP_PASSWORD', 'xypc lhco tpoq bvza')
+EMAIL_FROM = os.getenv('EMAIL_FROM', 'hospitalmanagement913@gmail.com')
 
 
 def send_email(to_email, subject, html_content, attachment=None, attachment_name=None):
     """
     Send email with optional attachment
-
-    For testing without email server, this will print to console
     """
-    try:
-        # For development/testing - just print to console
-        print(f"\n{'='*80}")
-        print(f"EMAIL TO: {to_email}")
-        print(f"SUBJECT: {subject}")
-        print(f"{'='*80}")
-        print(html_content)
-        print(f"{'='*80}\n")
-
-        # Uncomment below for actual email sending
-        """
+    try:        
         msg = MIMEMultipart('alternative')
         msg['From'] = EMAIL_FROM
         msg['To'] = to_email
@@ -59,7 +47,6 @@ def send_email(to_email, subject, html_content, attachment=None, attachment_name
             server.starttls()
             server.login(EMAIL_USER, EMAIL_PASSWORD)
             server.send_message(msg)
-        """
 
         return True
     except Exception as e:
@@ -157,7 +144,7 @@ def send_monthly_reports():
     try:
         # Get last month's date range
         today = datetime.now()
-        first_day_current_month = today.replace(day=1)
+        first_day_current_month = today.replace(day=30)
         last_day_prev_month = first_day_current_month - timedelta(days=1)
         first_day_prev_month = last_day_prev_month.replace(day=1)
 
@@ -382,10 +369,3 @@ def export_patient_treatments(patient_id):
     except Exception as e:
         print(f"Error in export_patient_treatments: {str(e)}")
         return {'status': 'error', 'message': str(e)}
-
-
-@shared_task(name='app.tasks.test_task')
-def test_task():
-    """Simple test task to verify Celery is working"""
-    print("Test task executed successfully!")
-    return {'status': 'success', 'message': 'Test task completed'}

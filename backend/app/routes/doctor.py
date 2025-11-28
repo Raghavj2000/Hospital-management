@@ -9,7 +9,7 @@ from app.models.appointment import Appointment
 from app.models.treatment import Treatment
 from app.models.patient import Patient
 from app.utils.decorators import role_required
-from app.utils.validators import validate_required_fields, parse_date, parse_time
+from app.utils.validators import parse_date, parse_time
 from app.utils.cache import invalidate_cache
 
 bp = Blueprint('doctor', __name__, url_prefix='/api/doctor')
@@ -174,11 +174,6 @@ def complete_appointment(appointment_id):
             return jsonify({'error': 'Cannot complete a cancelled appointment'}), 400
 
         data = request.get_json()
-
-        required_fields = ['diagnosis']
-        missing_fields = validate_required_fields(data, required_fields)
-        if missing_fields:
-            return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
 
         # Update appointment status
         appointment.status = 'Completed'
@@ -345,11 +340,6 @@ def update_patient_treatment(patient_id):
 
         data = request.get_json()
 
-        required_fields = ['appointment_id', 'diagnosis']
-        missing_fields = validate_required_fields(data, required_fields)
-        if missing_fields:
-            return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
-
         # Verify appointment belongs to this doctor and patient
         appointment = Appointment.query.filter_by(
             id=data['appointment_id'],
@@ -443,11 +433,6 @@ def set_availability():
 
         data = request.get_json()
 
-        required_fields = ['date', 'start_time', 'end_time']
-        missing_fields = validate_required_fields(data, required_fields)
-        if missing_fields:
-            return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
-
         availability_date = parse_date(data['date'])
         start_time = parse_time(data['start_time'])
         end_time = parse_time(data['end_time'])
@@ -540,7 +525,7 @@ def get_profile():
             return jsonify({'error': 'Doctor profile not found'}), 404
 
         return jsonify({
-            'profile': doctor.to_dict(include_user=True)
+            'profile': doctor.to_dict()
         }), 200
 
     except Exception as e:
@@ -572,7 +557,7 @@ def update_profile():
 
         return jsonify({
             'message': 'Profile updated successfully',
-            'profile': doctor.to_dict(include_user=True)
+            'profile': doctor.to_dict()
         }), 200
 
     except Exception as e:

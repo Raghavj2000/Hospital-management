@@ -21,7 +21,7 @@ class Patient(db.Model):
     # Relationships
     appointments = db.relationship('Appointment', backref='patient', lazy='dynamic', cascade='all, delete-orphan')
 
-    def to_dict(self, include_user=False):
+    def to_dict(self):
         """Convert patient to dictionary"""
         data = {
             'id': self.id,
@@ -38,8 +38,6 @@ class Patient(db.Model):
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }
-        if include_user and self.user:
-            data['user'] = self.user.to_dict()
         return data
 
     def __repr__(self):

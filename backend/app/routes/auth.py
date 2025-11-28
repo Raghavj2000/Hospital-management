@@ -3,7 +3,6 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 from app import db
 from app.models.user import User
 from app.models.patient import Patient
-from app.utils.validators import validate_email, validate_password, validate_required_fields
 
 bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 
@@ -11,21 +10,6 @@ bp = Blueprint('auth', __name__, url_prefix='/api/auth')
 def register():
     """Register a new patient"""
     data = request.get_json()
-
-    # Validate required fields
-    required_fields = ['username', 'email', 'password', 'full_name']
-    missing_fields = validate_required_fields(data, required_fields)
-    if missing_fields:
-        return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
-
-    # Validate email format
-    if not validate_email(data['email']):
-        return jsonify({'error': 'Invalid email format'}), 400
-
-    # Validate password
-    is_valid, message = validate_password(data['password'])
-    if not is_valid:
-        return jsonify({'error': message}), 400
 
     # Check if username already exists
     if User.query.filter_by(username=data['username']).first():
@@ -76,14 +60,10 @@ def login():
     """Login user (admin, doctor, or patient)"""
     data = request.get_json()
 
-    # Validate required fields
-    required_fields = ['username', 'password']
-    missing_fields = validate_required_fields(data, required_fields)
-    if missing_fields:
-        return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
-
     # Find user
     user = User.query.filter_by(username=data['username']).first()
+    print(user)
+    print(data['password'])
 
     if not user or not user.check_password(data['password']):
         return jsonify({'error': 'Invalid username or password'}), 401
@@ -96,7 +76,6 @@ def login():
 
     # Create access and refresh tokens
     access_token = create_access_token(identity=str(user.id))
-    refresh_token = create_refresh_token(identity=str(user.id))
 
     # Get profile data based on role
     profile = None
@@ -108,21 +87,8 @@ def login():
     return jsonify({
         'message': 'Login successful',
         'access_token': access_token,
-        'refresh_token': refresh_token,
         'user': user.to_dict(),
         'profile': profile
-    }), 200
-
-
-@bp.route('/refresh', methods=['POST'])
-@jwt_required(refresh=True)
-def refresh():
-    """Refresh access token"""
-    user_id = get_jwt_identity()
-    access_token = create_access_token(identity=str(user_id))
-
-    return jsonify({
-        'access_token': access_token
     }), 200
 
 

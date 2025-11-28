@@ -8,7 +8,6 @@ from app.models.patient import Patient
 from app.models.appointment import Appointment
 from app.models.department import Department
 from app.utils.decorators import role_required
-from app.utils.validators import validate_email, validate_required_fields
 from app.utils.cache import invalidate_cache, cache_response
 
 bp = Blueprint('admin', __name__, url_prefix='/api/admin')
@@ -66,11 +65,6 @@ def get_departments():
 def create_department():
     data = request.get_json()
 
-    required_fields = ['name']
-    missing_fields = validate_required_fields(data, required_fields)
-    if missing_fields:
-        return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
-
     if Department.query.filter_by(name=data['name']).first():
         return jsonify({'error': 'Department already exists'}), 409
 
@@ -109,9 +103,9 @@ def update_department(dept_id):
     try:
         if 'name' in data:
             # Check if new name already exists
-            existing = Department.query.filter_by(name=data['name']).first()
-            if existing and existing.id != dept_id:
-                return jsonify({'error': 'Department name already exists'}), 409
+            # existing = Department.query.filter_by(name=data['name']).first()
+            # if existing and existing.id != dept_id:
+            #     return jsonify({'error': 'Department name already exists'}), 409
             department.name = data['name']
 
         if 'description' in data:
@@ -179,7 +173,7 @@ def get_doctors():
         doctors = query.all()
 
         return jsonify({
-            'doctors': [doctor.to_dict(include_user=True) for doctor in doctors]
+            'doctors': [doctor.to_dict() for doctor in doctors]
         }), 200
 
     except Exception as e:
@@ -196,7 +190,7 @@ def get_doctor(doctor_id):
     if not doctor:
         return jsonify({'error': 'Doctor not found'}), 404
 
-    return jsonify({'doctor': doctor.to_dict(include_user=True)}), 200
+    return jsonify({'doctor': doctor.to_dict()}), 200
 
 
 """Create a new doctor account"""
@@ -206,14 +200,6 @@ def get_doctor(doctor_id):
 def create_doctor():
     
     data = request.get_json()
-
-    required_fields = ['username', 'email', 'password', 'full_name', 'department_id']
-    missing_fields = validate_required_fields(data, required_fields)
-    if missing_fields:
-        return jsonify({'error': f'Missing required fields: {", ".join(missing_fields)}'}), 400
-
-    if not validate_email(data['email']):
-        return jsonify({'error': 'Invalid email format'}), 400
 
     # Check if username already exists
     if User.query.filter_by(username=data['username']).first():
@@ -259,7 +245,7 @@ def create_doctor():
 
         return jsonify({
             'message': 'Doctor created successfully',
-            'doctor': doctor.to_dict(include_user=True)
+            'doctor': doctor.to_dict()
         }), 201
 
     except Exception as e:
@@ -303,8 +289,6 @@ def update_doctor(doctor_id):
 
         # Update user fields if provided
         if 'email' in data:
-            if not validate_email(data['email']):
-                return jsonify({'error': 'Invalid email format'}), 400
             existing = User.query.filter_by(email=data['email']).first()
             if existing and existing.id != doctor.user_id:
                 return jsonify({'error': 'Email already exists'}), 409
@@ -315,7 +299,7 @@ def update_doctor(doctor_id):
 
         return jsonify({
             'message': 'Doctor updated successfully',
-            'doctor': doctor.to_dict(include_user=True)
+            'doctor': doctor.to_dict()
         }), 200
 
     except Exception as e:
@@ -366,7 +350,7 @@ def get_patients():
         patients = Patient.query.all()
 
         return jsonify({
-            'patients': [patient.to_dict(include_user=True) for patient in patients]
+            'patients': [patient.to_dict() for patient in patients]
         }), 200
 
     except Exception as e:
@@ -382,7 +366,7 @@ def get_patient(patient_id):
     if not patient:
         return jsonify({'error': 'Patient not found'}), 404
 
-    return jsonify({'patient': patient.to_dict(include_user=True)}), 200
+    return jsonify({'patient': patient.to_dict()}), 200
 
 
 @bp.route('/patients/<int:patient_id>', methods=['PUT'])
@@ -419,8 +403,6 @@ def update_patient(patient_id):
 
         # Update user fields if provided
         if 'email' in data:
-            if not validate_email(data['email']):
-                return jsonify({'error': 'Invalid email format'}), 400
             existing = User.query.filter_by(email=data['email']).first()
             if existing and existing.id != patient.user_id:
                 return jsonify({'error': 'Email already exists'}), 409
@@ -430,7 +412,7 @@ def update_patient(patient_id):
 
         return jsonify({
             'message': 'Patient updated successfully',
-            'patient': patient.to_dict(include_user=True)
+            'patient': patient.to_dict()
         }), 200
 
     except Exception as e:
@@ -520,7 +502,7 @@ def search_doctors():
         ).all()
 
         return jsonify({
-            'doctors': [doctor.to_dict(include_user=True) for doctor in doctors]
+            'doctors': [doctor.to_dict() for doctor in doctors]
         }), 200
 
     except Exception as e:
@@ -548,7 +530,7 @@ def search_patients():
         ).all()
 
         return jsonify({
-            'patients': [patient.to_dict(include_user=True) for patient in patients]
+            'patients': [patient.to_dict() for patient in patients]
         }), 200
 
     except Exception as e:
