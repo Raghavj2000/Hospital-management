@@ -596,7 +596,15 @@ const PatientDashboard = {
             try {
                 this.exporting = true;
                 const response = await API.patient.exportTreatments();
-                this.$root.showToast(response.data.message, 'success');
+                 // Create a blob and trigger download
+                const blob = new Blob([response.data], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `treatment_history.csv`);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
             } catch (error) {
                 const message = error.response?.data?.error || 'Failed to export treatment history.';
                 this.$root.showToast(message, 'error');

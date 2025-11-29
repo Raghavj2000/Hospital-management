@@ -202,8 +202,8 @@ const API = {
 
         // Export
         exportTreatments: () =>
-            apiClient.post('/patient/export/treatments'),
-
+            apiClient.get('/patient/export/treatments', { responseType: 'blob' }),
+        
         getExportStatus: (taskId) =>
             apiClient.get(`/patient/export/status/${taskId}`)
     }

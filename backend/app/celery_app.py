@@ -12,7 +12,7 @@ def make_celery(flask_app):
     """Create Celery instance and configure it from Flask app"""
     celery = Celery(
         flask_app.import_name,
-        backend='redis://localhost:6379/1',
+        backend='redis://localhost:6379/0',
         broker='redis://localhost:6379/0'
     )
 

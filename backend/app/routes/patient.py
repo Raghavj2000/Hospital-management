@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, date, timedelta
 from sqlalchemy import and_, or_
@@ -12,7 +12,8 @@ from app.models.treatment import Treatment
 from app.utils.decorators import role_required
 from app.utils.validators import parse_date, parse_time
 from app.utils.cache import cache_response, invalidate_cache
-from config.config import config
+import csv
+import io
 
 bp = Blueprint('patient', __name__, url_prefix='/api/patient')
 
@@ -544,11 +545,11 @@ def update_profile():
 
 # ============= CSV Export =============
 
-@bp.route('/export/treatments', methods=['POST'])
+@bp.route('/export/treatments', methods=['GET'])
 @jwt_required()
 @role_required('patient')
 def export_treatments():
-    """Trigger async job to export treatment history as CSV"""
+    """Generate and return treatment history as a CSV file"""
     try:
         user_id = get_jwt_identity()
         user = User.query.get(user_id)
@@ -557,56 +558,57 @@ def export_treatments():
         if not patient:
             return jsonify({'error': 'Patient profile not found'}), 404
 
-        # Import task here to avoid circular imports
-        from app.tasks import export_patient_treatments
+        # Get all appointments with treatments for this patient
+        appointments = Appointment.query.filter_by(patient_id=patient.id).order_by(
+            Appointment.appointment_date.desc()
+        ).all()
 
-        # Trigger async task
-        task = export_patient_treatments.delay(patient.id)
+        # Create CSV data
+        output = io.StringIO(newline='')
+        writer = csv.writer(output)
 
-        return jsonify({
-            'message': 'Export job started. You will receive an email when it\'s ready.',
-            'task_id': task.id,
-            'status': 'processing'
-        }), 202
+        # Write header
+        writer.writerow([
+            'Appointment ID',
+            'Patient Name',
+            'Doctor Name',
+            'Department',
+            'Appointment Date',
+            'Appointment Time',
+            'Status',
+            'Diagnosis',
+            'Prescription',
+            'Notes',
+            'Next Visit Date'
+        ])
+
+        # Write data rows
+        for apt in appointments:
+            doctor = Doctor.query.get(apt.doctor_id)
+            treatment = Treatment.query.filter_by(appointment_id=apt.id).first()
+
+            print(treatment)
+
+            writer.writerow([
+                apt.id,
+                patient.full_name,
+                doctor.full_name if doctor else 'N/A',
+                doctor.department.name if doctor and doctor.department else 'N/A',
+                apt.appointment_date.strftime('%Y-%m-%d'),
+                apt.appointment_time,
+                apt.status,
+                treatment.diagnosis if treatment else 'N/A',
+                treatment.prescription if treatment else 'N/A',
+                treatment.treatment_notes if treatment else 'N/A',
+                treatment.next_visit_date.strftime('%Y-%m-%d') if treatment and treatment.next_visit_date else 'N/A'
+            ])
+
+        # Return CSV file as response
+        response = make_response(output.getvalue())
+        response.headers['Content-Disposition'] = \
+            f'attachment; filename=treatment_history_{patient.id}.csv'
+        response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+        return response
 
     except Exception as e:
-        return jsonify({'error': f'Failed to start export: {str(e)}'}), 500
-
-
-@bp.route('/export/status/<task_id>', methods=['GET'])
-@jwt_required()
-@role_required('patient')
-def get_export_status(task_id):
-    """Check status of export job"""
-    try:
-        from app.tasks import export_patient_treatments
-        from celery.result import AsyncResult
-
-        task = AsyncResult(task_id)
-
-        if task.state == 'PENDING':
-            response = {
-                'status': 'pending',
-                'message': 'Export is queued'
-            }
-        elif task.state == 'PROGRESS':
-            response = {
-                'status': 'processing',
-                'message': 'Export is in progress'
-            }
-        elif task.state == 'SUCCESS':
-            response = {
-                'status': 'completed',
-                'message': 'Export completed successfully',
-                'result': task.result
-            }
-        else:
-            response = {
-                'status': 'failed',
-                'message': str(task.info)
-            }
-
-        return jsonify(response), 200
-
-    except Exception as e:
-        return jsonify({'error': f'Failed to check export status: {str(e)}'}), 500
+        return jsonify({'error': f'Failed to export treatments: {str(e)}'}), 500

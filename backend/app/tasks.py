@@ -5,8 +5,6 @@ from datetime import datetime, timedelta
 from celery import shared_task
 from app.models import Appointment, Doctor, Patient, Treatment, User
 from app import db
-import csv
-import io
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
@@ -266,106 +264,4 @@ def send_monthly_reports():
 
     except Exception as e:
         print(f"Error in send_monthly_reports: {str(e)}")
-        return {'status': 'error', 'message': str(e)}
-
-
-@shared_task(name='app.tasks.export_patient_treatments')
-def export_patient_treatments(patient_id):
-    """
-    Async job to export patient treatment history as CSV
-    Triggered by user action
-    """
-    try:
-        patient = Patient.query.get(patient_id)
-        if not patient:
-            return {'status': 'error', 'message': 'Patient not found'}
-
-        patient_user = User.query.get(patient.user_id)
-
-        # Get all appointments with treatments for this patient
-        appointments = Appointment.query.filter_by(patient_id=patient_id).order_by(
-            Appointment.appointment_date.desc()
-        ).all()
-
-        # Create CSV data
-        output = io.StringIO()
-        writer = csv.writer(output)
-
-        # Write header
-        writer.writerow([
-            'Appointment ID',
-            'Patient ID',
-            'Patient Name',
-            'Doctor Name',
-            'Department',
-            'Appointment Date',
-            'Appointment Time',
-            'Status',
-            'Diagnosis',
-            'Treatment/Prescription',
-            'Notes',
-            'Next Visit Date'
-        ])
-
-        # Write data rows
-        for apt in appointments:
-            doctor = Doctor.query.get(apt.doctor_id)
-            treatment = Treatment.query.filter_by(appointment_id=apt.id).first()
-
-            writer.writerow([
-                apt.id,
-                patient.id,
-                patient.full_name,
-                doctor.full_name if doctor else 'N/A',
-                doctor.department.name if doctor and doctor.department else 'N/A',
-                apt.appointment_date.strftime('%Y-%m-%d'),
-                apt.appointment_time,
-                apt.status,
-                treatment.diagnosis if treatment else 'N/A',
-                treatment.prescription if treatment else 'N/A',
-                treatment.notes if treatment else 'N/A',
-                treatment.next_visit_date.strftime('%Y-%m-%d') if treatment and treatment.next_visit_date else 'N/A'
-            ])
-
-        csv_content = output.getvalue()
-        output.close()
-
-        # Send email with CSV attachment
-        if patient_user and patient_user.email:
-            subject = "Treatment History Export"
-            html_content = f"""
-            <html>
-                <body style="font-family: Arial, sans-serif;">
-                    <h2>Treatment History Export</h2>
-                    <p>Dear {patient.full_name},</p>
-                    <p>Your treatment history export is ready!</p>
-                    <p>Please find attached the CSV file containing all your treatment records.</p>
-                    <p><strong>Total Records:</strong> {len(appointments)}</p>
-                    <p>Thank you for using our Hospital Management System.</p>
-                    <hr>
-                    <p style="font-size: 12px; color: #666;">This is an automated message.</p>
-                </body>
-            </html>
-            """
-
-            filename = f"treatment_history_{patient_id}_{datetime.now().strftime('%Y%m%d')}.csv"
-            send_email(patient_user.email, subject, html_content, csv_content.encode(), filename)
-
-        # Also save to temporary location for download
-        export_dir = os.path.join(os.path.dirname(__file__), '..', 'exports')
-        os.makedirs(export_dir, exist_ok=True)
-
-        export_path = os.path.join(export_dir, f"treatment_history_{patient_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
-        with open(export_path, 'w', newline='', encoding='utf-8') as f:
-            f.write(csv_content)
-
-        return {
-            'status': 'success',
-            'message': 'Export completed successfully',
-            'records': len(appointments),
-            'file_path': export_path
-        }
-
-    except Exception as e:
-        print(f"Error in export_patient_treatments: {str(e)}")
         return {'status': 'error', 'message': str(e)}
