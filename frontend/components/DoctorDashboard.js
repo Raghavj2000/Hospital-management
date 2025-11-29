@@ -41,9 +41,6 @@ const DoctorDashboard = {
                     <div class="data-table-container mb-4">
                         <div class="data-table-header">
                             <h3>Upcoming Appointments</h3>
-                            <button class="btn btn-sm btn-outline-primary" @click="loadAppointments">
-                                <i class="bi bi-arrow-clockwise"></i> Refresh
-                            </button>
                         </div>
 
                         <table class="table table-hover">
@@ -352,16 +349,6 @@ const DoctorDashboard = {
                 this.$root.showToast('Failed to load dashboard', 'error');
             } finally {
                 this.$root.loading = false;
-            }
-        },
-
-        async loadAppointments() {
-            try {
-                const response = await API.doctor.getAppointments({ upcoming: true });
-                this.appointments = response.data.appointments;
-                this.$root.showToast('Appointments refreshed', 'success');
-            } catch (error) {
-                this.$root.showToast('Failed to refresh appointments', 'error');
             }
         },
 

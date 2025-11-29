@@ -183,10 +183,6 @@ const PatientDashboard = {
 
 
                                         </div>
-                                        <button class="btn btn-sm btn-primary mt-2 w-100"
-                                                @click="checkDoctorAvailability(doctor)">
-                                            Check Availability
-                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -463,14 +459,6 @@ const PatientDashboard = {
             } catch (error) {
                 this.$root.showToast('Failed to load doctors', 'error');
             }
-        },
-
-        async checkDoctorAvailability(doctor) {
-            this.selectedDoctor = doctor;
-            this.bookingForm.doctor_id = doctor.id;
-            this.showDoctorsModal = false;
-            await this.loadDoctorAvailability();
-            this.showBookModal = true;
         },
 
         async loadDepartmentDoctorsForBooking() {

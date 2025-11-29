@@ -26,11 +26,11 @@ def make_celery(flask_app):
     celery.conf.beat_schedule = {
         'send-daily-reminders': {
             'task': 'app.tasks.send_daily_reminders',
-            'schedule': crontab(hour=1, minute=20),
+            'schedule': crontab(hour=00, minute=55),
         },
         'send-monthly-reports': {
             'task': 'app.tasks.send_monthly_reports',
-            'schedule': crontab(day_of_month=28, hour=22, minute=56),
+            'schedule': crontab(day_of_month=30, hour=00, minute=55),
         },
     }
 
